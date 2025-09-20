@@ -1,0 +1,28 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{tittle}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-back-button defaultHref="/usuarios"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">form</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+<form class="form"[formGroup]="userForm" (ngSubmit)="onSubmit()">
+  <ion-label for="Nombre">Nombre</ion-label>
+  <input class="formControl" id="Nombre" type="text" formControlName="name" />
+  <ion-label for="Celular">Celular</ion-label>
+  <input class="formControl" id="Celular" type="tel" formControlName="phone" />
+  <ion-label for="Email">Correo electronico</ion-label>
+  <input class="formControl" id="Email" type="email" formControlName="email" />
+  <button type="submit">Submit</button>
+</form>
+<button (click)="deleteUser()">Delete User</button>
+
+</ion-content>
