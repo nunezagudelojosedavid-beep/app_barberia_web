@@ -160,6 +160,45 @@ export class FirestoreService {
       console.log('Cita actualizada con ID: ', id);
     });
   }
+
+  async getAppointmentsForBarberAndDay(barberId: string, date: Date): Promise<any[]> {
+
+    return runInInjectionContext(this.injector, async () => {
+
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const q = this.afs.collection('appointments', ref =>
+        ref.where('barber', '==', barberId)
+          .where('date', '>=', startOfDay)
+          .where('date', '<=', endOfDay)
+      );
+
+      const snapshot = await q.get().toPromise();
+
+      if (!snapshot || !snapshot.docs) {
+        return [];
+      }
+
+      // Mapea los documentos y convierte el timestamp a Date
+      const appointments = snapshot.docs.map(doc => {
+        const data = doc.data() as AppointmentModel;
+        const id = doc.id;
+        return {
+          ...data,
+          id,
+          date: (data.date as any)?.toDate ? (data.date as any).toDate() : data.date
+        };
+      });
+
+      return appointments;
+
+    });
+  }
+
   async deleteUserById(id: any): Promise<void> {
 
     runInInjectionContext(this.injector, () => {
@@ -196,28 +235,29 @@ export class FirestoreService {
     }
   }
   async getAppointmentById(id: string): Promise<AppointmentModel | null> {
-    // Obtén la referencia del documento por su ID
-    const userDocRef = this.afs.doc<AppointmentModel>(`appointments/${id}`);
-    // firstValueFrom porque es behabior observable
-    const snapshot = await firstValueFrom(userDocRef.get());
+    return runInInjectionContext(this.injector, async () => {
+      // Obtén la referencia del documento por su ID
+      const userDocRef = this.afs.doc<AppointmentModel>(`appointments/${id}`);
+      // firstValueFrom porque es behabior observable
+      const snapshot = await firstValueFrom(userDocRef.get());
 
-    // Verifica si el documento existe
-    if (snapshot && snapshot.exists) {
+      // Verifica si el documento existe
+      if (snapshot && snapshot.exists) {
 
-      // Obtén los datos del documento
-      const userData = snapshot.data() as AppointmentModel;
+        // Obtén los datos del documento
+        const userData = snapshot.data() as AppointmentModel;
 
-      // --- Paso clave: Conversión del Timestamp a Date ---
-      const convertedData = { ...userData };
-      if (convertedData.date && typeof (convertedData.date as any).toDate === 'function') {
-        convertedData.date = (convertedData.date as any).toDate();
+        // --- Paso clave: Conversión del Timestamp a Date ---
+        const convertedData = { ...userData };
+        if (convertedData.date && typeof (convertedData.date as any).toDate === 'function') {
+          convertedData.date = (convertedData.date as any).toDate();
+        }
+        // Obtén los datos del documento
+        return { id: snapshot.id, ...convertedData } as AppointmentModel;
+      } else {
+        // Si no se encuentra el documento, retorna null
+        return null;
       }
-      // Obtén los datos del documento
-      return { id: snapshot.id, ...convertedData } as AppointmentModel;
-    } else {
-      // Si no se encuentra el documento, retorna null
-      return null;
-    }
+    })
   }
-
 }
