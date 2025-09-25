@@ -9,6 +9,9 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { Observable } from 'rxjs';
+import { AppointmentModel } from 'src/app/interfaces/appointment-model';
+import { Barber } from 'src/app/interfaces/barber';
+import { Service } from 'src/app/interfaces/service';
 import { User } from 'src/app/interfaces/user';
 import { FirestoreService } from 'src/app/services/firestore';
 
@@ -71,7 +74,7 @@ export class FormPage implements OnInit {
         this.router.navigate(['/usuarios']);
       } else {
         console.log('else', userData)
-        await this.afs.setUsers(userData)
+        await this.afs.addUser(userData)
           .then(() => {
             console.log('Usuario creado con exito', userData);
             this.userForm.reset({ role: 'client', isSubscribed: false });
@@ -82,11 +85,18 @@ export class FormPage implements OnInit {
           });
       }
     }
+    
   }
+
+
+
+
 
   async loadUserForm(id: string) {
     console.log('id-loaduserform', id);
     const user = await this.afs.getUserById(id);
+    console.log('id-user', user);
+
     if (user) {
       // Si el usuario existe, llena el formulario con sus datos
       this.userForm.patchValue(user);
@@ -100,4 +110,7 @@ export class FormPage implements OnInit {
     const user = await this.afs.deleteUserById(this.userId);
     this.router.navigate(['/usuarios']);
   }
+
+
+
 }

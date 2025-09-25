@@ -15,7 +15,11 @@ const routes: Routes = [
   {
     path: 'form/:id',
     loadChildren: () => import('./form/form.module').then( m => m.FormPageModule)
-  }
+  },
+    {
+    path: 'appointment',
+    loadChildren: () => import('../appointment/appointment.module').then( m => m.AppointmentPageModule)
+  },
 
 ];
 

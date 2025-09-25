@@ -2,6 +2,12 @@
   <ion-toolbar>
     <ion-title>{{tittle}}</ion-title>
     <ion-buttons slot="end">
+      <ion-button slot="end" (click)="goToAppointment()">
+        <ion-icon slot="icon-only" name="calendar-number-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="goToSchedule()">
+        <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+      </ion-button>
       <ion-button (click)="goToForm()">
         <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
       </ion-button>
