@@ -195,6 +195,13 @@ export class AppointmentFormPage implements OnInit {
     console.log('selectedDate', this.selectedDate)
   }
 
+  resetSelection() {
+    this.selectedDate = null;
+    this.selectedHour = null;
+    this.formattedAppointmentDate = null;
+    this.appointmentForm.patchValue({ date: null });
+  }
+
   async loadAvailableHours() {
     this.availableHours = [];
 

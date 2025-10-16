@@ -19,7 +19,7 @@
         <ion-select-option value="barbero-C">Barbero C</ion-select-option>
       </ion-select>
     </ion-item>
-    
+
     <ion-item>
       <ion-label position="floating">Servicio</ion-label>
       <ion-select interface="modal" formControlName="service">
@@ -33,8 +33,13 @@
       <ion-label position="stacked">Fecha y Hora Actual de la Cita</ion-label>
       <h2>{{ formattedAppointmentDate }}</h2>
     </ion-item>
-    }
-
+    <ion-item>
+      <ion-button expand="full" (click)="isViewing = false; resetSelection()">
+        <ion-icon name="calendar" slot="start"></ion-icon>
+        Cambiar Fecha y Hora
+      </ion-button>
+    </ion-item>
+    }@else {
     <ion-item>
       <ion-label position="floating">Elige el Día</ion-label>
       <ion-select interface="modal" [value]="selectedDate?.toISOString()" (ionChange)="onDaySelected($event)">
@@ -43,8 +48,11 @@
         }
       </ion-select>
     </ion-item>
+    }
 
-    @if (selectedDate && availableHours.length > 0) {
+
+
+    @if (selectedDate && availableHours.length > 0 && !isViewing) {
     <ion-item>
       <ion-label position="floating">Elige la Hora</ion-label>
       <ion-select interface="modal" [value]="selectedHour" (ionChange)="onHourSelected($event)">
@@ -53,7 +61,7 @@
         }
       </ion-select>
     </ion-item>
-    } @else if (selectedDate) {
+    } @else if (selectedDate && !isViewing) {
     <ion-card>
       <ion-card-content>
         No hay horas disponibles para este día.

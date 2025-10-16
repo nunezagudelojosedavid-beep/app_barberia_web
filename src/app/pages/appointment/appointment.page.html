@@ -1,42 +1,54 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-title>Agenda de Citas</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="goToAppointmentForm()">
-        <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    
-    <ion-buttons slot="end">
+    <ion-buttons slot="start">
       <ion-back-button defaultHref="/usuarios"></ion-back-button>
     </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/appointment/form">
+        <ion-icon name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-segment (ionChange)="filterAppointments($event)" [value]="(selectedBarberFilter | async)">
+      <ion-segment-button value="todos">
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="barbero-A">
+        <ion-label>Barbero A</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="barbero-B">
+        <ion-label>Barbero B</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="barbero-C">
+        <ion-label>Barbero C</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Agenda de Citas</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  @if ((filteredAppointments$ | async)?.length === 0) {
+    <ion-card>
+      <ion-card-content>
+        <p>No hay citas agendadas que coincidan con el filtro.</p>
+      </ion-card-content>
+    </ion-card>
+  }
 
-  <ion-list>
-    @for (appointment of appointments$ | async; track appointment.id) {
-      <ion-item (click) = "goToEdit(appointment.id)">
-        <ion-label>
-          <h2>{{ appointment.clientName }}</h2>
-          <h2>{{ appointment.clientPhone }}</h2>
-          <p>{{ appointment.service }} con {{ appointment.barber }}</p>
-          <h2>{{ appointment.date | date:'EEEE, d MMMM y, h:mm a' }}</h2>
-          <p>{{ appointment.status }}</p>
-        </ion-label>
-      </ion-item>
-    } @empty {
-      <ion-item>
-        <ion-label>
-          <p>No hay citas agendadas.</p>
-        </ion-label>
-      </ion-item>
-    }
-  </ion-list>
+  @for (appointment of filteredAppointments$ | async; track appointment.id) {
+    <ion-card button [routerLink]="['/appointment/form', appointment.id]">
+      <ion-card-header>
+        <ion-card-title>{{ appointment.clientName }}</ion-card-title>
+        <ion-card-subtitle>{{ appointment.clientPhone }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Servicio:</strong> {{ appointment.service }} con {{ appointment.barber }}</p>
+        <p><strong>Fecha y hora:</strong> {{ appointment.date | date:'medium' }}</p>
+        <p><strong>Estado:</strong> {{ appointment.status }}</p>
+      </ion-card-content>
+    </ion-card>
+  }
 </ion-content>
